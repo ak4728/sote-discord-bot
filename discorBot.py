@@ -5,7 +5,6 @@ import aiohttp
 import json
 from discord import Game
 from discord.ext.commands import Bot
-import sqlite3 as lite
 from datetime import datetime
 from shareUpdate import shareUpdate
 from minnowutils import *
@@ -13,73 +12,14 @@ from steem import Steem as steemlib
 import os,shutil
 import pandas as pd
 
-def listtoChat(liste):
-    text = ''
-    for el in liste:
-        text += (str(el)+'\n')
-    return text
+
 
 BOT_PREFIX = ("?", "!")
-TOKEN = ''
+TOKEN = os.environ['discor_API_TOKEN']
 
 client = Bot(command_prefix=BOT_PREFIX)
-adminAccounts = ["steinhammer#8727","soteyapanbot","bahcehane","collectiveaction"]
-allowedAccounts = ["steinhammer#8727","soteyapanbot","bahcehane","collectiveaction"]
-
-
-
-def bringList():
-    con = lite.connect('log.db')
-    cur = con.cursor()
-    x = cur.execute("SELECT * FROM main.blackboard;")
-    returned = ''
-    for el in x:
-        returned = returned + el[0] + '\n'
-    con.close()
-    return returned
-
-
-def dbHandler(author,addedby,fcn='add'):
-#try:
-    con = lite.connect('log.db')
-    cur = con.cursor()
-    cur.execute('''CREATE TABLE IF NOT EXISTS `main`.`blackboard` (
-  `author` VARCHAR(300) NOT NULL,
-  `addedby` VARCHAR(300) NOT NULL,
-  `createdat` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP);
-''')
-    con.close()
-    con = lite.connect('log.db')
-    cur = con.cursor()
-    dt1 = str(datetime.now())
-    dt = "'"+dt1+"'"
-    if fcn == 'add':
-        query = '''INSERT INTO `main`.`blackboard` (`author`,`addedby`,`createdat`) VALUES ('{}', '{}', '{}');'''.format(author,addedby,dt1)
-    if fcn == 'remove':
-        query = '''DELETE FROM `main`.`blackboard`  WHERE author='{}';'''.format(author)
-    cur.execute(query)
-    con.commit()
-    con.close()
-    msg = 'Success'
-#except:
-#    msg = 'Error occured while adding the author to the database.'
-    return msg
-
-
-@client.command(name='8ball',
-                description="Answers a yes/no question.",
-                brief="Answers from the beyond.",
-                aliases=['eight_ball', 'eightball', '8-ball'],
-                pass_context=True)
-async def eight_ball(context):
-    possible_responses = [
-        'That is a resounding no',
-        'It is not looking likely',
-        'Too hard to tell',
-        'It is quite possible',
-        'Definitely',
-    ]
-    await client.say(random.choice(possible_responses) + ", " + context.message.author.mention)
+adminAccounts = ["steinhammer#8727"]
+allowedAccounts = ["steinhammer#8727"]
 
 
 @client.event
@@ -171,6 +111,7 @@ async def on_message(message):
                 finished,memo2=sendBids(stm,balance,voteQue,voted,amount,critical=2,iteration=int(inp[4]), accountname= accountname,botname=botname,memo=memo)
                 returned = 'The bid for {} has successfully transferred.'.format(memo2) 
             await client.send_message(message.channel, returned)
+
 client.run(TOKEN)
 
 @client.command()
