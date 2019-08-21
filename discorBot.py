@@ -70,11 +70,11 @@ async def on_message(message):
         if message.content.lower() == "sote flushdb":
             # DB Variables
             closer()
-            exists = os.path.isfile('elektroyazilim.db')
+            exists = os.path.isfile('log.db')
             conn = lite.connect(setupDB(accountname))
             if exists:
-                os.chmod('elektroyazilim.db', 0o777)
-                os.remove('elektroyazilim.db')
+                os.chmod('log.db', 0o777)
+                os.remove('log.db')
                 returned = "The database is successfully flushed."
             else:
                 returned = "No database is found."          
