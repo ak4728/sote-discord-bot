@@ -13,7 +13,6 @@ import os,shutil
 import pandas as pd
 
 
-
 BOT_PREFIX = ("?", "!")
 TOKEN = os.environ['discor_API_TOKEN']
 
@@ -66,19 +65,7 @@ async def on_message(message):
             await client.send_message(message.channel, returned)
         if message.content.lower() == "sote latest":
             returned = '__Temp Links__ \n'+ listtoChat(tempLinks())
-            await client.send_message(message.channel, returned)
-        if message.content.lower() == "sote flushdb":
-            # DB Variables
-            closer()
-            exists = os.path.isfile('log.db')
-            conn = lite.connect(setupDB(accountname))
-            if exists:
-                os.chmod('log.db', 0o777)
-                os.remove('log.db')
-                returned = "The database is successfully flushed."
-            else:
-                returned = "No database is found."          
-            await client.send_message(message.channel, returned)                
+            await client.send_message(message.channel, returned)            
         if message.content.lower().startswith("sote sendbids"):
             await client.send_message(message.channel, f'{time.asctime()} -> {message.author.mention}')  
             inp =message.content.lower().rsplit(' ')
