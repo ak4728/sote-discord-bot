@@ -12,6 +12,8 @@ trial = 4.5
 config = pd.read_csv('config.csv')
 accountname = config['accountname'][0]
 
+
+# Main function
 while True:
     try:
         if trial >= 4.7:
