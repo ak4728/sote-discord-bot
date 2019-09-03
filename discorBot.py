@@ -59,13 +59,36 @@ async def on_message(message):
         if message.content.lower() == "share update":
             returned = shareUpdate("soteyapanbot")
     if str(message.author) in allowedAccounts:
+        if len(message.content)==11 and message.content.lower() == "sote rshare":
+            accountname = str(message.author).rsplit("#")[0]
+            print(message.author,' requested rshare calculation.')
+            print(len(message.content))
+            returned = 'Thank you for your message '
+            try:
+                rshares = getRshares(accountname)
+                returned += str(message.author.mention)+'\n Your rshare is = {}'.format(rshares)
+            except:
+                returned += "\n We cannot find your username on steemit."
+            await client.send_message(message.channel, returned)
+        if len(message.content)>11:
+            if message.content.startswith("sote"):
+                if message.content.endswith("rshare"):
+                    accountname = message.content.rsplit(" ")[1]
+                    print(message.author,' requested rshare calculation.')
+                    returned = 'Thank you for your message '
+                    try:
+                        rshares = getRshares(accountname)
+                        returned += str(message.author.mention)+"\n {}'s rshare is = {}".format(accountname,rshares)
+                    except:
+                        returned += "\n We cannot find your username on steemit."
+                    await client.send_message(message.channel, returned)
         if message.content.lower() == "sote voteque":
             newQue = list( set(postGetter(accountname)) - set(tempLinks()) )
             returned = '__Current Vote Queue__ \n'+ listtoChat(newQue)
             await client.send_message(message.channel, returned)
         if message.content.lower() == "sote latest":
             returned = '__Temp Links__ \n'+ listtoChat(tempLinks())
-            await client.send_message(message.channel, returned)            
+            await client.send_message(message.channel, oreturned)            
         if message.content.lower().startswith("sote sendbids"):
             await client.send_message(message.channel, f'{time.asctime()} -> {message.author.mention}')  
             inp =message.content.lower().rsplit(' ')
@@ -113,14 +136,14 @@ async def on_ready():
     print("Logged in as " + client.user.name)
 
 
-# @client.command()
-# async def bitcoin():
-#     url = 'https://api.coindesk.com/v1/bpi/currentprice/BTC.json'
-#     async with aiohttp.ClientSession() as session:  # Async HTTP request
-#         raw_response = await session.get(url)
-#         response = await raw_response.text()
-#         response = json.loads(response)
-#         await client.say("Bitcoin price is: $" + response['bpi']['USD']['rate'])
+@client.command()
+async def bitcoin():
+    url = 'https://api.coindesk.com/v1/bpi/currentprice/BTC.json'
+    async with aiohttp.ClientSession() as session:  # Async HTTP request
+        raw_response = await session.get(url)
+        response = await raw_response.text()
+        response = json.loads(response)
+        await client.say("Bitcoin price is: $" + response['bpi']['USD']['rate'])
 
 
 async def list_servers():

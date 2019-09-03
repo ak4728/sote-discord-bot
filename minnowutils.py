@@ -21,6 +21,7 @@ import sqlite3
 from retrying import retry
 from steem import Steem as steemlib
 from steem.amount import Amount as samount
+from steem.converter import Converter
 
 
 #steem.set_default_nodes(['https://steemd.privex.io'])
@@ -285,3 +286,17 @@ def getBotTime(botname,accountname='soteyapanbot', amount = 4.5,iteration = 4,cr
                         time.sleep(300) #180
                 else:
                     time.sleep(1)
+
+
+
+def getRshares(accountname='soteyapanbot'):
+    s = steemlib()
+    c = Converter()
+    account = s.get_account(accountname)
+    vests = samount(account['vesting_shares']).amount
+    delegated_vests = samount(account['delegated_vesting_shares']).amount
+    received_vests = samount(account['received_vesting_shares']).amount
+    current_vests = float(vests) - float(delegated_vests) + float(received_vests)
+    steem_power = c.vests_to_sp(current_vests)
+    rshares = c.sp_to_rshares(steem_power)
+    return(rshares)
