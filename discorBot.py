@@ -18,7 +18,7 @@ TOKEN = os.environ['discor_API_TOKEN']
 
 client = Bot(command_prefix=BOT_PREFIX)
 adminAccounts = ["steinhammer#8727"]
-allowedAccounts = ["steinhammer#8727"]
+allowedAccounts = ["steinhammer#8727","etasarim#2115"]
 
 
 @client.event
@@ -59,6 +59,17 @@ async def on_message(message):
         if message.content.lower() == "share update":
             returned = shareUpdate("soteyapanbot")
     if str(message.author) in allowedAccounts:
+        if len(message.content)==14 and message.content.lower() == "sote kar zarar":
+            accountname = str(message.author).rsplit("#")[0]
+            print(message.author,' requested rshare calculation.')
+            print(len(message.content))
+            returned = 'Thank you for your message '
+            try:
+                rewards,rewardsold,steemp = getBreakeven()
+                returned += str(message.author.mention)+'\nThe breakeven point requires = {}k Steem power.\nThis equals to= ${:0.2f}'.format(int(steemp/1000), rewards)
+            except:
+                returned += "\n We cannot calculate the breakeven point at the moment. Sorry for the inconvenience."
+            await client.send_message(message.channel, returned)
         if len(message.content)==11 and message.content.lower() == "sote rshare":
             accountname = str(message.author).rsplit("#")[0]
             print(message.author,' requested rshare calculation.')
