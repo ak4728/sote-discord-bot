@@ -300,3 +300,34 @@ def getRshares(accountname='soteyapanbot'):
     steem_power = c.vests_to_sp(current_vests)
     rshares = c.sp_to_rshares(steem_power)
     return(rshares)
+
+
+def rshares_to_sp(rshares=1000000):
+    used_power = 200
+    vesting_shares = rshares  / used_power /100
+    sp  = c.vests_to_sp(vesting_shares)
+    return(sp)
+
+def getClaims(rshares):
+    cnst = 2000000000000
+    claims = (rshares* (rshares +2*cnst)) / (rshares + 4 * cnst)
+    return(claims)
+
+def rwdComp(claims,rshares,steemPower,steemPrice,s ,c ):
+    cnstOld = 1.59838903372e-12
+    steemRewards = steemPrice * claims * float(s.get_reward_fund('post')['reward_balance'].replace("STEEM","")) /float(s.get_reward_fund('post')['recent_claims'])
+    steemRewardsOld = cnstOld*steemPrice * 200 * 100 * steemPower/ (samount(c.steemd.get_dynamic_global_properties()['total_vesting_fund_steem']).amount/samount(c.steemd.get_dynamic_global_properties()['total_vesting_shares']).amount)
+    return(steemRewards, steemRewardsOld)
+
+def getBreakeven():
+    s = steemlib()
+    c = Converter()
+    steemPrice = float(s.get_current_median_history_price()['base'].replace("SBD",""))/float(s.get_current_median_history_price()['quote'].replace("STEEM",""))
+    for i in range(400000,500000,1000):
+        rshares = c.sp_to_rshares(i)
+        claims = getClaims(rshares)
+        steemRewards, steemRewardsOld = rwdComp(claims,rshares,i,steemPrice, s ,c  )
+        if math.fabs(steemRewards - steemRewardsOld) <= 0.001:
+            print(steemRewards, steemRewardsOld,i)
+            break
+    return(steemRewards, steemRewardsOld, i)
